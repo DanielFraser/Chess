@@ -1,7 +1,7 @@
 class Chess
 
   def initialize
-    @white_turn = true
+    @@white_turn = true
     @draw = false
     @game_end = false
   end
@@ -9,7 +9,6 @@ class Chess
   def self.main
     Board_util.init_hash
     board = Board.new
-    valid_move = false
 
     board.start
 
@@ -22,11 +21,14 @@ class Chess
         valid_move = board.make_move(user_input)
       end
       puts ""
-      @white_turn = !@white_turn
+      @@white_turn = !@@white_turn
     end
   end
 
-  attr_reader :white_turn
+  def self.white_turn
+    @@white_turn
+  end
+
 end
 
 Chess.main

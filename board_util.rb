@@ -1,8 +1,8 @@
 class Board_util
 
   def initialize
-    @row = {}
-    @col = {}
+    @@row = {}
+    @@col = {}
   end
 
   def self.init_hash
@@ -19,11 +19,15 @@ class Board_util
     puts row, col
   end
 
-  def getloc(coordinate)
+  def self.getloc(coordinate)
     [row[coordinate[0]], col[coordinate[1]]]
   end
 
-  def initialize_board
+  def self.convert_coord(pos)
+    "abcdefgh"[pos[1]] + 8-pos[0]
+  end
+
+  def self.initialize_board
     pieces = []
     (0..7).each {|x|
       pieces.append(Pawn.new([6, x], "w"))
