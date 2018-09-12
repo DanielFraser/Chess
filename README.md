@@ -1,6 +1,6 @@
-## Welcome to Chess
+# Welcome to Chess
 
-# input is all from console in the form:
+## input is all from console in the form:
 old_pos new_pos
 where old/new_pos is [A-H][1-8]
 
