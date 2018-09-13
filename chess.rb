@@ -9,7 +9,7 @@ class Chess
 
 
   def self.main
-    Board_util.init_hash
+    BoardUtil.init_hash
     board = Board.new
 
     board.start

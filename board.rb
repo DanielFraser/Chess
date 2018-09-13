@@ -5,6 +5,7 @@ class Board
     @board = Array.new(8) {Array.new(8)}
     @empty_board = Array.new(8) {Array.new(8)}
     @pieces = []
+    @piece_locations = {}
     init_empty
   end
 
@@ -16,7 +17,10 @@ class Board
   end
 
   def start
-    @pieces = Board_util.initialize_board
+    @pieces = BoardUtil.initialize_board
+    (0..@pieces.length - 1).each {|i|
+      @piece_locations[p.loc] = i
+    }
   end
 
   def draw_pieces
@@ -48,39 +52,33 @@ class Board
   end
 
   def get_color(pos)
-    @pieces.each do |x|
-      if x.loc[0] == pos[0] && x.loc[1] == pos[1] && !x.cap
-        return x.color
-      end
+    if @piece_locations.key?(pos)
+      @board[@piece_locations[pos]].color
     end
-    "none"
+    'none'
   end
 
   def make_move(input)
     input = input.downcase
     inputs = input.split(' ')
-    if inputs.length < 3
-      inputs.append('')
-    end
+    inputs.append('') if inputs.length < 3
     b = move_piece(inputs[0], inputs[1], inputs[2])
     puts 'Illegal move!' unless b
     b
   end
 
   def get_piece(pos, turn)
-    pos1 = Board_util.convert_coord(pos)
+    pos1 = BoardUtil.getloc(pos)
 
-    @pieces.each do |x|
-      if x.loc[0] == pos1[0] && x.loc[1] == pos1[1] && !x.cap && x.color == turn ? 'w' : 'b'
-        return @pieces.index(x)
-      end
+    if @piece_locations.key?(pos1)
+      @board[@piece_locations[pos1]].color
     end
     -1
   end
 
   def move_piece(pos1, pos2, piece)
     if valid_move(pos1, pos2, Chess.white_turn)
-      new_loc = Board_util.getloc(pos2)
+      new_loc = BoardUtil.getloc(pos2)
       if get_piece(pos2, !Chess.white_turn) != -1
         p2 = @pieces[get_piece(pos2, !Chess.white_turn)]
         if p2.instance_of? King
@@ -111,7 +109,7 @@ class Board
     p = @pieces[get_piece(pos1, turn)]
 
     if correct_locs(pos1, pos2, turn)
-      pos2coord = Board_util.getloc(pos2)
+      pos2coord = BoardUtil.getloc(pos2)
       return p.can_move(pos2coord[0], pos2coord[1])
     end
     false
@@ -124,8 +122,8 @@ class Board
   end
 
   def no_block(pos1, pos2, turn)
-    pos1coord = Board_util.getloc(pos1)
-    pos2coord = Board_util.getloc(pos2)
+    pos1coord = BoardUtil.getloc(pos1)
+    pos2coord = BoardUtil.getloc(pos2)
     # go through straight
     get_piece(pos2, turn) == -1 && !diagonal_block(pos1coord, pos2coord)
   end
@@ -165,7 +163,7 @@ class Board
     bk = @pieces[28]
     @pieces.each do |x|
       next unless x.color == 'w' && !x.cap
-      if valid_move(Board_util.convert_coord(x.loc), Board_util.convert_coord(bk.loc), true)
+      if valid_move(BoardUtil.convert_coord(x.loc), BoardUtil.convert_coord(bk.loc), true)
         return true
       end
     end
@@ -176,7 +174,7 @@ class Board
     wk = @pieces[28]
     @pieces.each do |x|
       next unless x.color == 'b' && !x.cap
-      if valid_move(Board_util.convert_coord(x.loc), Board_util.convert_coord(wk.loc), true)
+      if valid_move(BoardUtil.convert_coord(x.loc), BoardUtil.convert_coord(wk.loc), true)
         return true
       end
     end
@@ -193,10 +191,10 @@ class Board
         cm = false
       else
         @pieces[20].possible_moves.each {|x|
-          if valid_move(Board_util.convert_coord(coords), Board_util.convert_coord(x), true)
+          if valid_move(BoardUtil.convert_coord(coords), BoardUtil.convert_coord(x), true)
             @pieces[20].loc = x
-            if get_piece(Board_util.convert_coord(x), false) != -1
-              k = get_piece(Board_util.convert_coord(x), false)
+            if get_piece(BoardUtil.convert_coord(x), false) != -1
+              k = get_piece(BoardUtil.convert_coord(x), false)
               @pieces[k].captured
             end
 
@@ -225,10 +223,10 @@ class Board
         cm = false
       else
         @pieces[28].possible_moves.each {|x|
-          if valid_move(Board_util.convert_coord(coords), Board_util.convert_coord(x), false)
+          if valid_move(BoardUtil.convert_coord(coords), BoardUtil.convert_coord(x), false)
             @pieces[28].loc = x
-            if get_piece(Board_util.convert_coord(x), true) != -1
-              k = get_piece(Board_util.convert_coord(x), true)
+            if get_piece(BoardUtil.convert_coord(x), true) != -1
+              k = get_piece(BoardUtil.convert_coord(x), true)
               @pieces[k].captured
             end
 
@@ -257,10 +255,10 @@ class Board
         pos_moves = x.possible_moves
         cur_loc = x.loc
         for y in pos_moves
-          if valid_move(Board_util.convert_coord(x.loc), Board_util.convert_coord(y), color == "w")
+          if valid_move(BoardUtil.convert_coord(x.loc), BoardUtil.convert_coord(y), color == "w")
             x.loc = y
-            if get_piece(Board_util.convert_coord(y), color != "w")
-              k = get_piece(Board_util.convert_coord(y), color != "w")
+            if get_piece(BoardUtil.convert_coord(y), color != "w")
+              k = get_piece(BoardUtil.convert_coord(y), color != "w")
               @pieces[k].captured
             end
 

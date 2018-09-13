@@ -1,26 +1,26 @@
 require 'require_all'
 require_all 'Pieces'
 
-class Board_util
+class BoardUtil
 
-  @@row = {}
-  @@col = {}
+  @row = {}
+  @col = {}
 
   def self.init_hash
     i = 0
     %w[a b c d e f g h].each {|x|
-      @@col[x] = i
+      @col[x] = i
       i += 1
     }
 
     (0..7).each {|i|
-      @@row[8 - i] = i
+      @row[8 - i] = i
     }
 
   end
 
   def self.getloc(coordinate)
-    [row[coordinate[1]], col[coordinate[0]]]
+    [@row[coordinate[1]], @col[coordinate[0]]]
   end
 
   def self.convert_coord(pos)
