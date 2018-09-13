@@ -58,24 +58,31 @@ class Board
     'none'
   end
 
+  # splits input and tries to move piece
   def make_move(input)
     input = input.downcase
     inputs = input.split(' ')
     inputs.append('') if inputs.length < 3
-    b = move_piece(inputs[0], inputs[1], inputs[2])
-    puts 'Illegal move!' unless b
-    b
+    if get_piece(BoardUtil.getloc(inputs[0]), Chess.white_turn ? "w" : "b") == -1 || !move_piece(inputs[0], inputs[1], inputs[2])
+      puts 'Illegal move!'
+      return false
+    end
+    true
   end
 
+  # return piece at certain location or -1 if no piece
   def get_piece(pos, turn)
     pos1 = BoardUtil.getloc(pos)
-
+    if [true, false].include? turn
+      turn = turn ? "w" : "b"
+    end
     if @piece_locations.key?(pos1)
-      @board[@piece_locations[pos1]].color
+      return @piece_locations[pos1] if @pieces[@piece_locations[pos1]].color == turn ? 'w' : 'b'
     end
     -1
   end
 
+  # move piece if nothing is blocking
   def move_piece(pos1, pos2, piece)
     if valid_move(pos1, pos2, Chess.white_turn)
       new_loc = BoardUtil.getloc(pos2)
@@ -105,27 +112,46 @@ class Board
     false
   end
 
+  #
   def valid_move(pos1, pos2, turn)
     p = @pieces[get_piece(pos1, turn)]
 
-    if correct_locs(pos1, pos2, turn)
+    if no_block(pos1, pos2, turn)
       pos2coord = BoardUtil.getloc(pos2)
       return p.can_move(pos2coord[0], pos2coord[1])
     end
     false
   end
 
-  def correct_locs(pos1, pos2, turn)
-    return no_block(pos1, pos2, turn) if get_piece(pos2, turn) == -1
-
-    false
-  end
-
+  # check if anything is blocking path
   def no_block(pos1, pos2, turn)
     pos1coord = BoardUtil.getloc(pos1)
     pos2coord = BoardUtil.getloc(pos2)
     # go through straight
-    get_piece(pos2, turn) == -1 && !diagonal_block(pos1coord, pos2coord)
+    !straight_block(pos1coord, pos2coord) && !diagonal_block(pos1coord, pos2coord)
+  end
+
+  # is piece being blocked from N, S, E, or W?
+  def straight_block(pos1, pos2)
+    pos1coord = BoardUtil.getloc(pos1)
+    pos2coord = BoardUtil.getloc(pos2)
+    if pos1coord[0] == pos2coord[0]
+      i = pos1coord[1]
+      while i != pos2coord[1]
+        return true if has_piece([pos1coord[0], i])
+        if i < pos2coord[1]
+          i += 1
+        else
+          i -= 1
+        end
+      end
+    end
+    false
+  end
+
+  def has_piece(pos1coord)
+    return true if get_piece(pos1coord, "w") || get_piece(pos1coord, "b")
+    false
   end
 
   def diagonal_block(pos1coord, pos2coord)
@@ -133,19 +159,32 @@ class Board
         ((pos1coord[0] - pos2coord[0] != pos1coord[1] - pos2coord[1]) || (pos1coord[0] - pos2coord[0] != -(pos1coord[1] - pos2coord[1])))
       return false
     else
-      y =
-          for x in pos1coord[0]..pos2coord[0]
-
-          end
+      rows = []
+      cols = []
+      if pos1coord[0] > pos2coord[0]
+        rows = Array(pos2coord[0], pos1coord[0])
+      else
+        rows = Array(pos1coord[0], pos2coord[0])
+      end
+      if pos1coord[1] > pos2coord[1]
+        cols = Array(pos2coord[1], pos1coord[1])
+      else
+        cols = Array(pos1coord[1], pos2coord[1])
+      end
+      i = 0
+      while i < cols.length
+        if has_piece([rows[i], cols[i]])
+          return true
+        end
+        i += 1
+      end
     end
-
     false
   end
 
   def promotion(pos2, piece)
     p = @pieces[get_piece(pos2, Chess.white_turn)]
-    if ((p.color == 'w' && p.loc[0] == 0) || (p.color == 'b' && p.loc[0] == 7)) && p.instance_of?
-      Pawn
+    if ((p.color == 'w' && p.loc[0] == 0) || (p.color == 'b' && p.loc[0] == 7)) && p.instance_of? Pawn
       @pieces[get_piece(pos2, Chess.white_turn)] = case piece
                                                    when 'N'
                                                      Knight.new(p.loc, p.color)
