@@ -1,30 +1,30 @@
+require 'require_all'
+require_all 'Pieces'
+
 class Board_util
 
-  def initialize
-    @@row = {}
-    @@col = {}
-  end
+  @@row = {}
+  @@col = {}
 
   def self.init_hash
     i = 0
     %w[a b c d e f g h].each {|x|
-      col[x] = i
+      @@col[x] = i
       i += 1
     }
 
     (0..7).each {|i|
-      row[8 - i] = i
+      @@row[8 - i] = i
     }
 
-    puts row, col
   end
 
   def self.getloc(coordinate)
-    [row[coordinate[0]], col[coordinate[1]]]
+    [row[coordinate[1]], col[coordinate[0]]]
   end
 
   def self.convert_coord(pos)
-    "abcdefgh"[pos[1]] + 8-pos[0]
+    ("abcdefgh"[pos[1]]) + (8 - pos[0])
   end
 
   def self.initialize_board
@@ -54,7 +54,7 @@ class Board_util
     pieces.append(Bishop.new([0, 5], "b"))
     pieces.append(Knight.new([0, 6], "b"))
     pieces.append(Rook.new([0, 7], "b"))
+    pieces
   end
 
-  attr_reader :row, :col
 end

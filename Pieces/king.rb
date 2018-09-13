@@ -9,7 +9,7 @@ class King < ChessPiece
     moves = []
     (-1..1).each {|x|
       (-1..1).each {|y|
-        if (x != 0) or (y != 0)
+        if x + y != 0
           puts "#{x}, #{y}"
           if inbounds(x + loc[0], y + loc[1])
             moves.append([x + loc[0], y + loc[1]])
@@ -25,12 +25,7 @@ class King < ChessPiece
   end
 
   def to_string
-    require 'colorize'
-    if color == "w"
-      puts "K".white
-    else
-      puts "K".black
-    end
+    "K"
   end
 end
 

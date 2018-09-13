@@ -1,10 +1,12 @@
+require_relative 'board_util'
+require_relative 'board'
+
 class Chess
 
-  def initialize
-    @@white_turn = true
-    @draw = false
-    @game_end = false
-  end
+  @@white_turn = true
+  @draw = false
+  @game_end = false
+
 
   def self.main
     Board_util.init_hash
@@ -16,11 +18,16 @@ class Chess
       board.draw_board
       valid_move = false
       until valid_move
-        white_turn ? print "White's move: " : print "Black's move: "
+        if white_turn
+          print "White's move: "
+        else
+          print "Black's move: "
+        end
         user_input = gets.chomp
+        puts user_input
         valid_move = board.make_move(user_input)
       end
-      puts ""
+      puts ''
       @@white_turn = !@@white_turn
     end
   end
@@ -29,6 +36,9 @@ class Chess
     @@white_turn
   end
 
+  def self.end_game
+    @game_end = true
+  end
 end
 
 Chess.main

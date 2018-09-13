@@ -20,12 +20,7 @@ class Knight < ChessPiece
   end
 
   def to_string
-    require 'colorize'
-    if color == "w"
-      puts "k".white
-    else
-      puts "k".black
-    end
+    "k"
   end
 end
 

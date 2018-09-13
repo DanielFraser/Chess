@@ -25,11 +25,6 @@ class Pawn < ChessPiece
   end
 
   def to_string
-    require 'colorize'
-    if color == "w"
-      puts "P".white
-    else
-      puts "P".black
-    end
+    "P"
   end
 end

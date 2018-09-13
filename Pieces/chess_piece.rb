@@ -1,3 +1,15 @@
+module Diagonal
+  def is_diagonal(pos1, pos2)
+     (pos1[0] - pos2[0] == pos1[1] - pos2[1]) || (pos1[0] - pos2[0] == -(pos1[1] - pos2[1]))
+  end
+end
+
+module Straight
+  def is_straight(pos1, pos2)
+    (pos1[0] == pos2[0] && pos1[1] != pos2[1]) || (pos1[0] != pos2[0] && pos1[1] == pos2[1])
+  end
+end
+
 class ChessPiece
   def initialize(loc, color)
     # Instance variables
@@ -27,6 +39,5 @@ class ChessPiece
     @cap = true
   end
 
-  attr_accessor :loc, :color
-  attr_reader :cap
+  attr_accessor :loc, :color, :cap
 end
